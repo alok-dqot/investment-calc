@@ -14,6 +14,7 @@ const InflationCalculator = () => {
 
     // Calculate inflation when the form is submitted or on initial load
     const calculateInflation = () => {
+
         const inflationFactor = Math.pow(1 + inflationRate / 100, years);
         const result = initialAmount / inflationFactor; // Eroded value due to inflation
 
@@ -51,7 +52,7 @@ const InflationCalculator = () => {
             <div className="row">
                 <div className="col-12 col-md-4">
                     <h2 className="text-center">Inflation Calculator</h2>
-                    <form onSubmit={calculateInflation} className="form">
+                    <form className="form">
                         <div className="form-group m-3">
                             <label htmlFor="initialAmount">Initial Amount</label>
                             <input
@@ -88,7 +89,7 @@ const InflationCalculator = () => {
                             />
                         </div>
 
-                        <button type="submit" className="btn btn-primary btn-block my-3">
+                        <button type="button" className="btn btn-primary btn-block my-3">
                             Calculate
                         </button>
                     </form>
