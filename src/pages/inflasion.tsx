@@ -2,19 +2,22 @@ import { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 
-
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const InflationCalculator = () => {
-    const [initialAmount, setInitialAmount] = useState<number>(1000);
-    const [inflationRate, setInflationRate] = useState<number>(3);
-    const [years, setYears] = useState<number>(10);
+    // Combined state object to manage all inputs
+    const [formData, setFormData] = useState({
+        initialAmount: 1000,
+        inflationRate: 3,
+        years: 10,
+    });
+
     const [adjustedValue, setAdjustedValue] = useState<number | null>(null);
     const [chartData, setChartData] = useState<any>(null);
 
-    // Calculate inflation when the form is submitted or on initial load
+    // Calculate inflation and update chart data
     const calculateInflation = () => {
-
+        const { initialAmount, inflationRate, years } = formData;
         const inflationFactor = Math.pow(1 + inflationRate / 100, years);
         const result = initialAmount / inflationFactor; // Eroded value due to inflation
 
@@ -29,7 +32,6 @@ const InflationCalculator = () => {
         setChartData({
             labels: yearsArray.map((year) => `${year} year${year === 1 ? '' : 's'}`),
             datasets: [
-
                 {
                     label: 'Adjusted Value (Inflation)',
                     data: valuesArray,
@@ -42,10 +44,19 @@ const InflationCalculator = () => {
         });
     };
 
-
+    // Call calculateInflation on first load and on form change
     useEffect(() => {
         calculateInflation();
-    }, [initialAmount, inflationRate, years]);
+    }, [formData]);
+
+    // Handle input changes for all fields
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: parseFloat(value)
+        }));
+    };
 
     return (
         <div className="container mt-5">
@@ -59,8 +70,9 @@ const InflationCalculator = () => {
                                 type="number"
                                 className="form-control"
                                 id="initialAmount"
-                                value={initialAmount}
-                                onChange={(e) => setInitialAmount(e.target.value as any)}
+                                name="initialAmount"
+                                value={formData.initialAmount}
+                                onChange={handleInputChange}
                                 placeholder="Enter the initial amount"
                             />
                         </div>
@@ -71,8 +83,9 @@ const InflationCalculator = () => {
                                 type="number"
                                 className="form-control"
                                 id="inflationRate"
-                                value={inflationRate}
-                                onChange={(e) => setInflationRate(e.target.value as any)}
+                                name="inflationRate"
+                                value={formData.inflationRate}
+                                onChange={handleInputChange}
                                 placeholder="Enter the annual inflation rate"
                             />
                         </div>
@@ -83,23 +96,24 @@ const InflationCalculator = () => {
                                 type="number"
                                 className="form-control"
                                 id="years"
-                                value={years}
-                                onChange={(e) => setYears(e.target.value as any)}
+                                name="years"
+                                value={formData.years}
+                                onChange={handleInputChange}
                                 placeholder="Enter the number of years"
                             />
                         </div>
 
-                        <button type="button" className="btn btn-primary btn-block my-3">
+                        <button type="button" className="btn btn-primary btn-block my-3" onClick={calculateInflation}>
                             Calculate
                         </button>
                     </form>
                 </div>
-                <div className="col-12 col-md-8">
 
+                <div className="col-12 col-md-8">
                     {adjustedValue !== null && (
                         <div className="mt-4">
                             <h3 className="text-center">
-                                Adjusted Value after {years} years: ${adjustedValue.toFixed(2)}
+                                Adjusted Value after {formData.years} years: ${adjustedValue.toFixed(2)}
                             </h3>
                         </div>
                     )}
@@ -122,14 +136,7 @@ const InflationCalculator = () => {
                                                 title: (tooltipItems) => `Year: ${tooltipItems[0].label}`,
                                                 label: (tooltipItem) => {
                                                     const value = tooltipItem.raw as any;
-                                                    if (tooltipItem.datasetIndex === 0) {
-                                                        // For the Initial Capital dataset
-                                                        return `Initial Capital: $${value.toFixed(2)}`;
-                                                    } else if (tooltipItem.datasetIndex === 1) {
-                                                        // For the Adjusted Value dataset
-                                                        return `Adjusted Value: $${value.toFixed(2)}`;
-                                                    }
-                                                    return '';
+                                                    return `Adjusted Value: $${value.toFixed(2)}`;
                                                 },
                                             },
                                         },
@@ -155,8 +162,6 @@ const InflationCalculator = () => {
                     )}
                 </div>
             </div>
-
-
         </div>
     );
 };
