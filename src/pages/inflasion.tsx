@@ -19,16 +19,16 @@ const InflationCalculator = () => {
     const calculateInflation = () => {
         const { initialAmount, inflationRate, years } = formData;
         const inflationFactor = Math.pow(1 + inflationRate / 100, years);
-        const result = initialAmount / inflationFactor; // Eroded value due to inflation
+        const result = initialAmount / inflationFactor;
 
-        // Generate data points for chart
+
         const yearsArray = Array.from({ length: years + 1 }, (_, i) => i);
-        const initialValuesArray = yearsArray.map(() => initialAmount); // Constant line for initial amount
+        const initialValuesArray = yearsArray.map(() => initialAmount);
         const valuesArray = yearsArray.map((year) => initialAmount / Math.pow(1 + inflationRate / 100, year));
 
         setAdjustedValue(result);
 
-        // Set chart data
+
         setChartData({
             labels: yearsArray.map((year) => `${year} year${year === 1 ? '' : 's'}`),
             datasets: [
@@ -44,10 +44,12 @@ const InflationCalculator = () => {
         });
     };
 
+
     // Call calculateInflation on first load and on form change
     useEffect(() => {
         calculateInflation();
     }, [formData]);
+
 
     // Handle input changes for all fields
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
