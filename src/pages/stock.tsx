@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const API_KEY = '7Q3DIT5V0R1R0UYB'; // Your Alpha Vantage API Key
+const API_KEY = '7Q3DIT5V0R1R0UYB';
 
 const StockCards: React.FC = () => {
     const [topGainers, setTopGainers] = useState<any[]>([]);
@@ -9,7 +9,6 @@ const StockCards: React.FC = () => {
     const [topActivelyTraded, setTopActivelyTraded] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
-    // Fetch data for Top Gainers, Top Losers, and Top Actively Traded
     useEffect(() => {
         const fetchStockData = async () => {
             setLoading(true);
@@ -23,7 +22,6 @@ const StockCards: React.FC = () => {
 
                 const data = response.data;
 
-                // Assuming API response matches the structure you've provided
                 setTopGainers(data['top_gainers'] || []);
                 setTopLosers(data['top_losers'] || []);
                 setTopActivelyTraded(data['most_actively_traded'] || []);
